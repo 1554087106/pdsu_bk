@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.restaurant.FoodMapper">
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物 -->
+	<sql id="getFoodByNameAndCtid">
+		<if test="f_name!=null and f_name!=''">
+			f_name like '%${f_name}%'
+		</if>
+		<if test="f_fwid!=null and f_fwid!=''">
+			and f_fwid=#{f_fwid}
+		</if>
+		<if test="f_ctid!=null and f_ctid!=''">
+			and f_ctid=#{f_ctid}
+		</if>
+	</sql>
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物并根据价钱有低到高 -->
+	<sql id="getFoodByNameAndCtid2Hight">
+		<if test="f_name!=null and f_name!=''">
+			f_name like '%${f_name}%'
+		</if>
+		<if test="f_ctid!=null and f_ctid!=''">
+			and f_ctid=#{f_ctid}
+		</if>
+	</sql>
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物由高到低 -->
+	<sql id="getFoodByNameAndCtid2Low">
+		<if test="f_name!=null and f_name!=''">
+			f_name like '%${f_name}%'
+		</if>
+		<if test="f_ctid!=null and f_ctid!=''">
+			and f_ctid=#{f_ctid}
+		</if>
+
+	</sql>
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物 -->
+	<sql id="getFoodByFwidAndCtid">
+		<if test="f_ctid!=null and f_ctid!=''">
+			f_ctid=#{f_ctid}
+		</if>
+		<if test="f_fwid!=null and f_fwid!=''">
+			and f_fwid=#{f_fwid}
+		</if>
+	</sql>
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物按价格由低到高 -->
+	<sql id="getFoodByFwidAndCtidOrderhight">
+		<if test="f_ctid!=null and f_ctid!=''">
+			f_ctid=#{f_ctid}
+		</if>
+		<if test="f_fwid!=null and f_fwid!=''">
+			and f_fwid=#{f_fwid}
+		</if>
+
+	</sql>
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物按价格由高到底 -->
+	<sql id="getFoodByFwidAndCtidOrderlow">
+		<if test="f_ctid!=null and f_ctid!=''">
+			f_ctid=#{f_ctid}
+		</if>
+		<if test="f_fwid!=null and f_fwid!=''">
+			and f_fwid=#{f_fwid}
+		</if>
+
+	</sql>
+
+	<!-- 懒加载通过食物表查询食物所属窗口以及所属餐厅的相关信息 -->
+	<resultMap type="Food" id="getFood">
+		<id column="f_id" property="f_id" />
+		<result column="f_name" property="f_name" />
+		<result column="f_price" property="f_price" />
+		<result column="f_intro" property="f_intro" />
+		<result column="f_img" property="f_img" />
+		<result column="f_fwid" property="f_fwid" />
+		<result column="f_ctid" property="f_ctid" />
+		<association property="foodWindow" select="getFoodWindowById"
+			column="f_fwid">
+		</association>
+		<association property="restaurant" select="getRestaurantById"
+			column="f_ctid">
+		</association>
+	</resultMap>
+	<select id="getFoodWindowById" resultType="foodWindow">
+		SELECT *from
+		foodwindow where fw_id=#{f_fwid}
+	</select>
+	<select id="getRestaurantById" resultType="restaurant">
+		SELECT *from
+		restaurant where ct_id=#{f_ctid}
+	</select>
+
+	<!-- 根据输入的食物名字模糊查询搜索食物 -->
+	<select id="selectFoodByName" parameterType="String" resultMap="getFood">
+		select *from food where f_name like '%${value}%'
+	</select>
+
+
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物 -->
+	<select id="selectFoodByNameAndCtid" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByNameAndCtid"></include>
+		</where>
+	</select>
+
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物由低到高 -->
+	<select id="selectFoodByNameAndCtid2Hight" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByNameAndCtid2Hight"></include>
+		</where>
+		order by f_price asc
+	</select>
+
+	<!-- 根据根据餐厅和食物名称限定查询指定餐厅所有相同食物由高到低 -->
+	<select id="selectFoodByNameAndCtid2Low" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByNameAndCtid2Low"></include>
+		</where>
+		order by f_price desc
+	</select>
+
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物 -->
+	<select id="selectFoodByFwidAndCtid" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByFwidAndCtid"></include>
+		</where>
+	</select>
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物并根据价格排序由低到高 -->
+	<select id="selectFoodByFwidAndCtid2Hight" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByFwidAndCtidOrderhight"></include>
+		</where>
+		order by f_price asc
+	</select>
+	<!-- 根据根据窗口id和餐厅id限定查询指定餐厅，指定窗口的食物并根据价格排序由高到低 -->
+	<select id="selectFoodByFwidAndCtid2Low" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByFwidAndCtidOrderlow"></include>
+		</where>
+		order by f_price desc
+	</select>
+	<!-- 数据库根据相同的食物名称去重 -->
+	<select id="distinctByName" resultMap="getFood">
+		select * from
+		food where
+		food.f_id in (select max(f_id) from food group by
+		food.f_name)
+	</select>
+	<!-- 关键字获取食物名称，只取前五条 -->
+	<select id="findFoodNameByAjax" resultType="string">
+		select f_name from
+		food where(
+		food.f_id in (select max(f_id) from food group by
+		food.f_name) and f_name like '%${value}%')  LIMIT 5
+	</select>
+	
+	
+	<!-- 通过食物名称，窗口ID,餐厅ID共同来限定一款食物 -->
+	<select id="findFoodByNameAndWinIdAndRestId" parameterType="Food"
+		resultMap="getFood">
+		select *FROM food
+		<where>
+			<include refid="getFoodByNameAndCtid"></include>
+		</where>
+	</select>
+</mapper>

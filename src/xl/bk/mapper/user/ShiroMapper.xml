@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.user.ShiroMapper">
+	<!-- 通过用户的ID查询出它的个人信息，角色 -->
+	<select id="selectUserRoleByUserId" resultMap="getUserInfo">
+		select * from user
+		<if test="value!=null">
+			where user.u_id=#{value}
+		</if>
+	</select>
+	<!-- 获取角色 -->
+	<select id="getRoleInfos" resultType="Role">
+		select role.* from user_role,role
+		<if test="value!=null">
+			where user_role.user_id =#{value} and
+			role.r_id=user_role.role_id
+		</if>
+	</select>
+	<resultMap type="User" id="getUserInfo">
+		<id column="u_id" property="u_id" />
+		<collection property="roles" column="u_id" javaType="ArrayList"
+			ofType="Role" select="getRoleInfos">
+			<id column="r_id" property="r_id" />
+			<!-- <collection property="permissions" column="r_id" javaType="ArrayList" 
+				ofType="Permission" select="getPermissions"> <id column="id" property="id"/> 
+				</collection> -->
+		</collection>
+
+	</resultMap>
+	<!-- == -->
+	<!-- 根据角色编号查询用户的权限信息 -->
+	<select id="selectPermissionByRolseId" resultType="Permission">
+		select
+		permission.*, role_permission.roleid
+		from
+		role_permission,
+		permission
+		where
+		role_permission.roleid = #{value} and
+		permission.id=role_permission.permissionid
+	</select>
+	<!-- 根据用户账号查询用户所拥有得权限 -->
+	<select id="selectPermissionListByUId" parameterType="String"
+		resultType="Permission">
+		select * from permission where
+		permission.type = 'button' and permission.id
+		IN (
+		select role_permission.permissionid
+		from role_permission where
+		role_permission.roleid
+		IN ( select user_role.role_id from user_role,
+		user
+		where user.u_id =#{value} and user.u_id = user_role.user_id ))
+
+	</select>
+	<!-- 根据用户账号查询用户所有的菜单 -->
+	<select id="selectMenuListByUId" parameterType="String"
+		resultType="Permission">
+		select * from permission where
+		permission.type = 'menu' and
+		permission.id
+		in ( select role_permission.permissionid
+		from
+		role_permission where role_permission.roleid
+		in ( select
+		user_role.role_id from user_role, user
+		where user.u_id = #{value}
+		and user.u_id = user_role.user_id ))
+	</select>
+	<select id="selectUserByUid" parameterType="String"
+		resultType="User">
+		select *from user where u_id=#{value}
+	</select>
+	<!-- 从数据库中获取全部的用户名称 -->
+	<select id="selectAllUsernames" resultType="User">
+		select user.u_id from user
+	</select>
+	<!-- === -->
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.restaurant.FoodWindowMapper">
+	<!-- 根据餐厅id查询窗口信息 -->
+	<select id="selectWindowByCid" resultType="FoodWindow"
+		parameterType="int">
+		select * from foodwindow where
+		foodwindow.fw_ctid=#{ctid}
+	</select>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.college.TeacherMapper">
+
+	<!-- 懒加载通过教师表查询院系以及办公室信息resultMap -->
+	<resultMap type="Teacher" id="getTeacher">
+		<id column="t_id" property="t_id" />
+		<result column="t_name" property="t_name" />
+		<result column="t_sex" property="t_sex" />
+		<result column="t_pro" property="t_pro" />
+		<result column="t_tel" property="t_tel" />
+		<result column="t_wq" property="t_wq" />
+		<result column="t_email" property="t_email" />
+		<result column="t_img" property="t_img" />
+		<result column="t_uid" property="t_uid" />
+		<result column="t_oid" property="t_oid" />
+		<result column="t_cid" property="t_cid" />
+		<association property="office" select="getOfficeById"
+			column="t_oid">
+		</association>
+		<association property="college" select="getCollegeById"
+			column="t_cid">
+		</association>
+	</resultMap>
+
+	<!-- 懒加载通过教师表查询院系以及办公室信息 -->
+	<select id="selectAllTeacher" resultMap="getTeacher">
+		select * from teacher
+	</select>
+	<select id="getCollegeById" resultType="xl.bk.pojo.college.College">
+		SELECT * from college
+		WHERE college.c_id=#{t_cid}
+	</select>
+	<select id="getOfficeById" resultType="xl.bk.pojo.college.Office">
+		SELECT * from office WHERE
+		office.o_id=#{t_oid}
+	</select>
+
+	<!-- 根据办公室编号查询教师 -->
+	<select id="selectAllTeacherByOfficeId" parameterType="int"
+		resultMap="getTeacher">
+		SELECT * FROM teacher WHERE t_oid =#{officeId}
+	</select>
+	<!-- 根据院系编号查询教师 -->
+	<select id="selectTeacherByCid" parameterType="int"
+		resultMap="getTeacher">
+		SELECT * FROM teacher WHERE t_cid =#{cid}
+	</select>
+
+	<!-- 根据教师姓名查询教师 -->
+	<select id="selectAllTeacherByName" parameterType="String"
+		resultMap="getTeacher">
+		select * from teacher where t_name like '%${value}%'
+	</select>
+
+	<!-- 添加教师信息 -->
+	<insert id="insertTeacher" parameterType="teacher">
+		<selectKey keyProperty="t_id" resultType="int" order="AFTER">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO teacher ( t_name, t_sex, t_pro, t_tel,
+		t_wq,t_email,t_img,t_uid,t_cid,t_oid)
+		VALUES (
+		#{t_name},#{t_sex},#{t_pro},#{t_tel},#{t_wq},
+		#{t_email},#{t_img},#{t_uid},#{t_cid},#{t_oid})
+	</insert>
+
+	<!-- 添加教师与学生之间的关系 -->
+	<insert id="insertTeacherStudentContact">
+		<selectKey keyProperty="ts_id" resultType="int" order="AFTER">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO tstable (ts_tid,ts_sid) VALUES(#{ts_tid},#{ts_sid})
+	</insert>
+
+
+	<!-- 通过学生学号查询教师学生表查询与登录学生已建立起关系的老师 -->
+
+	<select id="selectTeacherStudentByStudentUid" parameterType="String"
+		resultType="Teacher">
+		SELECT * FROM teacher WHERE
+		teacher.t_id IN (
+		SELECT
+		tstable.ts_tid
+		FROM
+		tstable
+		WHERE
+		tstable.ts_sid IN (
+		SELECT
+		student.s_id
+		FROM
+		student
+		WHERE
+		student.s_uid = #{value} ) )
+	</select>
+	<!-- 通过学生学号刪除与某个老师之间建立的关系 -->
+	<delete id="deleteTeacherStudentContactByStudentUid"
+		parameterType="TeacherStudentContact">
+		DELETE
+		FROM
+		tstable
+		WHERE
+		tstable.ts_tid = #{ts_tid}
+		AND tstable.ts_sid = #{ts_sid};
+	</delete>
+
+	<!-- 查询老师老师与学生建立的所有关系 -->
+	<select id="selectTeacherStudentHas" parameterType="TeacherStudentContact" resultType="int">
+		SELECT COUNT(*)
+		from pdsu_bk.tstable WHERE ts_sid=#{ts_sid} and ts_tid=#{ts_tid}
+	</select>
+	<delete id="deleteTeacherStudentContact" parameterType="TeacherStudentContact">
+		delete from tstable where tstable.ts_sid=#{ts_sid} and tstable.ts_tid =#{ts_tid};
+	</delete>
+</mapper>

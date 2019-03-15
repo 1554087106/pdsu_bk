@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.user.UserMapper">
+	<!-- 查询用户个人信息 -->
+	<select id="selectStudentByUid" resultMap="getUserInfos">
+	<if test="value!=null">
+		select u.*, s.* from user u,student s  where  s.s_uid=u.u_id and u.u_id =#{value}
+	</if>
+	</select>
+	<select id="selectTeacherByUid" resultMap="getUserInfos">
+	<if test="value!=null">
+		select u.*, t.* from user u,teacher t  where  t.t_uid=u.u_id and u.u_id=#{value}
+	</if>
+	</select>
+	<resultMap type="User" id="getUserInfos">
+		<id column="u_id" property="u_id"/>
+		<result column="u_pwd" property="u_pwd"/>
+		<result column="u_salt" property="u_salt"/>
+		<result column="u_locked" property="u_locked"/>
+		<result column="u_idcard" property="u_idcard"/>
+		<association property="student" javaType="Student">
+			<id column="s_id" property="s_id"/>
+			<result column="s_name" property="s_name"/>
+			<result column="s_sex" property="s_sex"/>
+			<result column="s_tel" property="s_tel"/>
+			<result column="s_wq" property="s_wq"/>
+			<result column="s_email" property="s_email"/>
+			<result column="s_class" property="s_class"/>
+			<result column="s_img" property="s_img"/>
+			<result column="s_uid" property="s_uid"/>
+			<result column="s_cid" property="s_cid"/>
+		</association>
+		<association property="teacher" javaType="Teacher">
+			<id column="t_id" property="t_id"/>
+			<result column="t_name" property="t_name"/>
+			<result column="t_sex" property="t_sex"/>
+			<result column="t_pro" property="t_pro"/>
+			<result column="t_tel" property="t_tel"/>
+			<result column="t_wq" property="t_wq"/>
+			<result column="t_email" property="t_email"/>
+			<result column="t_img" property="t_img"/>
+			<result column="t_uid" property="t_uid"/>
+			<result column="t_cid" property="t_cid"/>
+			<result column="t_oid" property="t_oid"/>
+		</association>
+	</resultMap>
+	
+	
+	<!-- 修改学生表，教师表信息 -->
+	<update id="updateStudentInfo" parameterType="Student">
+		update student s
+			set 
+			<if test="s_name!=null">
+			 s.s_name = #{s_name},
+			</if>
+			<if test="s_sex!=null">
+			 s.s_sex = #{s_sex},
+			 </if>
+			 <if test="s_tel!=null">
+			 s.s_tel = #{s_tel},
+			 </if>
+			 <if test="s_wq!=null">
+			 s.s_wq = #{s_wq},
+			 </if>
+			 <if test="s_email!=null">
+			 s.s_email = #{s_email},
+			 </if>
+			 <if test="s_class!=null">
+			 s.s_class = #{s_class},
+			 </if>
+			 <if test="s_img!=null">
+			 s.s_img = #{s_img},
+			 </if>
+			 <if test="s_cid!=null">
+			 s.s_cid = #{s_cid},
+			 </if>
+			 <if test="s_uid!=null">
+			 s.s_uid = #{s_uid}
+			 </if>
+			WHERE
+			 <if test="s_uid!=null">
+			 s.s_uid = #{s_uid}
+			 </if>
+	</update>
+	<update id="updateTeacherInfo" parameterType="Teacher">
+		update teacher t
+			set 
+				<if test="t_name!=null">
+				t.t_name=#{t_name},
+				</if>
+				<if test="t_sex!=null">
+				t.t_sex=#{t_sex},
+				</if>
+				<if test="t_pro!=null">
+				t.t_pro=#{t_pro},
+				</if>
+				<if test="t_tel!=null">
+				t.t_tel=#{t_tel},
+				</if>
+				<if test="t_wq!=null">
+				t.t_wq=#{t_wq},
+				</if>
+				<if test="t_email!=null">
+				t.t_email=#{t_email},
+				</if>
+				<if test="t_img!=null">
+				t.t_img=#{t_img},
+				</if>
+				<if test="t_cid!=null">
+				t.t_cid=#{t_cid},
+				</if>
+				<if test="t_oid!=null">
+				t.t_oid=#{t_oid},
+				</if>
+				t.t_uid=#{t_uid}
+			where
+				t.t_uid=#{t_uid}
+	</update>
+	<!-- ==== -->
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.user.MessgeMapper">
+	<!-- 添加消息 -->
+	<insert id="addMessge" parameterType="Messge">
+		INSERT INTO messge (
+		m_uid,
+		m_content,
+		m_type,
+		m_time,
+		m_stauts
+		)
+		VALUES
+		(
+		#{m_uid},
+		#{m_content},
+		#{m_type},
+		#{m_time},
+		#{m_stauts}
+		);
+	</insert>
+	<!--查询消息 -->
+	<select id="selectMessgeByUid" parameterType="String" resultType="Messge">
+		SELECT
+		*
+		FROM
+		messge
+		WHERE
+		messge.m_uid =#{value} and messge.m_stauts='0';
+	</select>
+	<!--查询所有消息 -->
+	<select id="selectAllMessgeByUid" parameterType="String" resultType="Messge">
+		SELECT
+		*
+		FROM
+		messge
+		WHERE
+		messge.m_uid =#{value};
+	</select>
+	<!-- 修改消息 -->
+	<update id="updateMessgeStatus" parameterType="String">
+		UPDATE
+		messge
+		SET
+		m_stauts = '1'
+		WHERE
+		m_uid =#{value};
+	</update>
+
+
+</mapper>

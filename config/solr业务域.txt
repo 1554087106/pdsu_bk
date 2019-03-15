@@ -1,0 +1,68 @@
+﻿private int c_id;// 院系编号
+private String c_name;// 院系名称
+private String c_intro;// 院系简介
+private String c_tel;// 院系联系电话
+private String c_location;// 院系位置
+private String c_img;// 院系图片
+
+<!--院系名称-->
+<field name="c_name" type="text_ik" indexed="true" stored="true"/>
+<!--院系电话-->
+<field name="c_tel" type="text_ik" indexed="false" stored="true"/>
+<!--院系简介-->
+<field name="c_intro" type="text_ik" indexed="true" stored="false"/>
+<!--院系位置-->
+<field name="c_location" type="text_ik" indexed="true" stored="false"/>
+<!--院系图片-->
+<field name="c_img" type="text_ik" indexed="false" stored="true"/>
+<field name="c_keywords" type="text_ik" indexed="true" stored="false" multiValued="true"/>
+<copyField source="c_name" dest="c_keywords"/>
+<copyField source="c_intro" dest="c_keywords"/>
+<copyField source="c_location" dest="c_keywords"/>
+
+private Integer o_id;// 办公室表编号
+private Integer o_num;// 办公室编号
+private String o_name;// 办公室名称
+private Integer o_count;// 办公室人数
+private String o_intro;// 办公室备注
+private String o_location;// 院系位置
+private Integer o_cid;// 外键（院系id）
+<!--办公室编号-->
+<field name="o_num" type="text_ik" indexed="false" stored="true"/>
+<!--办公室名称-->
+<field name="o_name" type="text_ik" indexed="true" stored="true"/>
+<!--办公室人数-->
+<field name="o_count" type="text_ik" indexed="false" stored="true"/>
+<!--办公室备注-->
+<field name="o_intro" type="text_ik" indexed="true" stored="true"/>
+<!--办公室位置-->
+<field name="o_location" type="text_ik" indexed="true" stored="true"/>
+
+<field name="o_keywords" type="text_ik" indexed="true" stored="false" multiValued="true"/>
+<copyField source="o_name" dest="o_keywords"/>
+<copyField source="o_intro" dest="o_keywords"/>
+<copyField source="o_location" dest="o_keywords"/>
+
+
+
+private int id;// 公告主键
+private String title;// 公告标题
+private Date time;// 公告时间
+private String publisher;// 公告发布人
+private String content;// 公告内容
+private int type;// 公告类型：1：内部公告2：外部公告
+<!--公告标题-->
+<field name="n_title" type="text_ik" indexed="true" stored="true"/>
+<!--公告时间-->
+<field name="n_time" type="text_ik" indexed="false" stored="true"/>
+<!--公告发布人-->
+<field name="n_publisher" type="text_ik" indexed="false" stored="true"/>.
+<!--公告内容-->
+<field name="n_content" type="text_ik" indexed="true" stored="false"/>
+<field name="n_keywords" type="text_ik" indexed="true" stored="false" multiValued="true"/>
+<copyField source="n_title" dest="n_keywords"/>
+<copyField source="n_content" dest="n_keywords"/>
+
+
+
+

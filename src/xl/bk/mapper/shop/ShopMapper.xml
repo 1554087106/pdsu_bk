@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.shop.ShopMapper">
+	
+	<sql id="findDoodsByNameAndDesc">
+		<if test="value!=null">
+		where ps_name like '%${value}%'
+		</if>
+		ORDER BY ps_date DESC
+	</sql>
+	
+	<select id="selectAllGoodsyName" parameterType="String" resultType="xl.bk.pojo.pawnshop.PawnShop">
+		SELECT * FROM pawnshop 
+		<include refid="findDoodsByNameAndDesc"></include>
+	</select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.user.NoticeMapper">
+	<!-- 增加一条公告 -->
+	<insert id="insertNotice" parameterType="Notice">
+		INSERT INTO notice
+		VALUES
+		(
+			#{id},
+			#{title},
+			#{time},
+			#{publisher},
+			#{content},
+			#{type}
+		)
+	</insert>
+	<!-- = -->
+	
+	
+	<!-- 删除公告 -->
+	<delete id="delectNoticeByNoticeID">
+		DELETE
+			FROM
+				notice
+			WHERE
+				id = #{value}
+	</delete>
+	<!-- === -->
+	<!-- 修改公告 -->
+	<update id="updataNotice">
+	UPDATE notice n
+		SET n.title = #{title},
+			 n.time = NOW(),
+			 n.publisher = #{publisher},
+			 n.content = #{content},
+			 n.type =#{type}
+		WHERE
+			 n.id = #{id}
+	</update>
+	<!-- === -->
+	<!-- 多条件组合查询公告 -->
+	<select id="findNotices" parameterType="Notice" resultType="Notice">
+		SELECT
+			*
+			FROM
+			notice
+			WHERE 1=1
+			<if test="id!=0">
+			and notice.id = #{id}
+			</if>
+			<if test="title!=null">
+			and notice.title LIKE '%${title}%'
+			</if>
+			<if test="time!=null">
+			<![CDATA[
+			and DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= date(notice.time)
+			]]>
+			</if>
+			<if test="publisher!=null">
+			and notice.publisher = #{publisher}
+			</if>
+			<if test="content!=null">
+			and notice.content LIKE '%${content}%'
+			</if>
+			<if test="type!=0">
+			and notice.type = #{type}
+			</if>
+	</select>
+	<!--===  -->
+	<select id="selectAllNotice" resultType="Notice">
+		SELECT * FROM notice
+	</select>
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xl.bk.mapper.college.OfficeMapper">
+	<!-- sql片段 -->
+	<sql id="getByNum">
+		<if test="o_num!=null and o_num!=''">
+			o_num like '%${o_num}%'
+		</if>
+		<if test="o_cid!=null and o_cid!=''">
+			and o_cid =#{o_cid}
+		</if>
+	</sql>
+	<!-- 懒加载通过通过id查询院系信息，并查询所属院系的办公室 -->
+	<resultMap type="Office" id="getOffice">
+		<id column="o_id" property="o_id" />
+		<result column="o_num" property="o_num" />
+		<result column="o_name" property="o_name" />
+		<result column="o_count" property="o_count" />
+		<result column="o_intro" property="o_intro" />
+		<result column="o_cid" property="o_cid" />
+		<association property="college" select="getCollegeById"
+			column="o_cid">
+		</association>
+	</resultMap>
+
+	<!-- 查询所有办公室 -->
+	<select id="selectAllOffice" resultType="office">
+		select * from office
+		order by o_id asc
+	</select>
+
+	<!-- 根据院系的id查询旗下办公室 -->
+	<select id="selectOfficeByCollegeId" parameterType="int"
+		resultMap="getOffice">
+		SELECT * FROM office WHERE o_cid =#{collegeId}
+	</select>
+	<select id="getCollegeById"
+		resultType="xl.bk.pojo.college.College">
+		SELECT * from college
+		WHERE college.c_id=#{o_cid}
+	</select>
+
+	<!-- 根据办公室name -->
+	<select id="selectOfficeByNum" parameterType="office"
+		resultType="office">
+		select * from office
+		<where>
+			<include refid="getByNum"></include>
+		</where>
+	</select>
+
+	<!-- 插入办公室信息 -->
+	<insert id="insertOffice" parameterType="office">
+		<selectKey keyProperty="o_id" resultType="int" order="AFTER">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO office ( o_num, o_name, o_count, o_intro, o_cid) VALUES (
+		#{o_num},#{o_name},#{o_count},#{o_intro},#{o_cid})
+	</insert>
+
+	<!-- 查询所有办公室 -->
+	<select id="selectAllOfficeByOid" resultType="office">
+		SELECT
+		o_id,
+		o_num,
+		o_name,
+		o_count,
+		o_intro
+		FROM
+		pdsu_bk.office
+	</select>
+</mapper>
